@@ -563,13 +563,40 @@
                     </div>
                 </div>
 
-                <h4 style="margin: 20px 0 10px; color: #2c3e50;">💡 Why This Formula?</h4>
+                <h4 style="margin: 20px 0 10px; color: #2c3e50;">🎯 Understanding the "+1" (The Counting Principle)</h4>
+                <div style="background: #fff3cd; padding: 20px; border-radius: 8px; margin: 15px 0; border-left: 4px solid #f39c12;">
+                    <p style="line-height: 1.8; margin-bottom: 15px;">
+                        <strong>Why do we add +1?</strong> This is crucial to understand!
+                    </p>
+                    <div style="background: white; padding: 15px; border-radius: 5px; font-family: 'Courier New', monospace; margin: 10px 0;">
+                        <strong>Example: Input = 7, Filter = 3 (no padding, stride 1)</strong><br><br>
+                        First valid position: 0 → Filter covers [0, 1, 2]<br>
+                        Last valid position: 4 → Filter covers [4, 5, 6]<br><br>
+                        <strong style="color: #856404;">How many positions from 0 to 4?</strong><br>
+                        Count: 0, 1, 2, 3, 4 = <strong style="color: #27ae60;">5 positions!</strong>
+                    </div>
+                    <p style="line-height: 1.8; margin-top: 15px;">
+                        <strong>General counting rule:</strong> From index <code>a</code> to index <code>b</code>,
+                        there are <strong>(b - a + 1)</strong> positions.
+                    </p>
+                    <p style="line-height: 1.8; margin-top: 10px;">
+                        <strong>Applied to our formula:</strong><br>
+                        • Last position = (Input - Filter) = ${H} - ${F} = ${H - F}<br>
+                        • First position = 0<br>
+                        • Total positions = (${H - F}) - 0 + 1 = <strong style="color: #27ae60;">${H - F + 1}</strong>
+                    </p>
+                    <p style="line-height: 1.8; margin-top: 15px; color: #856404; font-weight: 600;">
+                        💡 The "+1" accounts for including the starting position (0) in the count!
+                    </p>
+                </div>
+
+                <h4 style="margin: 20px 0 10px; color: #2c3e50;">💡 Complete Breakdown</h4>
                 <ul style="line-height: 1.8; margin-left: 20px;">
-                    <li><strong>(Input - Filter):</strong> Available sliding range</li>
-                    <li><strong>+ 2P:</strong> Padding extends the sliding range on both sides</li>
-                    <li><strong>/ Stride:</strong> Jumping reduces number of positions</li>
-                    <li><strong>+ 1:</strong> Count includes the starting position</li>
-                    <li><strong>⌊⌋:</strong> Floor function ensures valid integer positions</li>
+                    <li><strong>(Input - Filter):</strong> Last valid starting position for the filter</li>
+                    <li><strong>+ 1:</strong> Converts from last position index to total count (positions 0 to N = N+1 positions)</li>
+                    <li><strong>+ 2P:</strong> Padding extends the input on both sides, increasing available positions</li>
+                    <li><strong>/ Stride:</strong> Jumping by S positions reduces the number of positions by factor of S</li>
+                    <li><strong>⌊⌋:</strong> Floor function ensures we get valid integer output dimensions</li>
                 </ul>
             `;
         }
