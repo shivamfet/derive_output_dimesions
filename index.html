@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Derive Output Dimension Formula</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.2em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        .step {
+            background: #f8f9fa;
+            border-left: 5px solid #667eea;
+            padding: 25px;
+            margin-bottom: 30px;
+            border-radius: 8px;
+            transition: all 0.3s;
+        }
+
+        .step:hover {
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            transform: translateX(5px);
+        }
+
+        .step-number {
+            display: inline-block;
+            width: 40px;
+            height: 40px;
+            background: #667eea;
+            color: white;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 40px;
+            font-weight: bold;
+            font-size: 1.2em;
+            margin-right: 15px;
+            float: left;
+        }
+
+        .step-content {
+            margin-left: 60px;
+        }
+
+        .step h3 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+
+        .step p {
+            color: #555;
+            line-height: 1.8;
+            margin-bottom: 10px;
+            font-size: 1.05em;
+        }
+
+        .formula {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border: 2px solid #e0e0e0;
+            font-family: 'Courier New', monospace;
+            font-size: 1.1em;
+            text-align: center;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .formula.highlight {
+            background: #fff3cd;
+            border-color: #ffc107;
+        }
+
+        .visual-example {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        .grid-container {
+            display: inline-block;
+            margin: 20px;
+        }
+
+        .grid {
+            display: inline-grid;
+            gap: 2px;
+            padding: 10px;
+            background: #34495e;
+            border-radius: 5px;
+        }
+
+        .cell {
+            width: 30px;
+            height: 30px;
+            background: #3498db;
+            border: 1px solid #2980b9;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8em;
+            color: white;
+            font-weight: bold;
+        }
+
+        .cell.padding {
+            background: #9b59b6;
+            border-color: #8e44ad;
+        }
+
+        .cell.filter {
+            background: #e74c3c;
+            border-color: #c0392b;
+        }
+
+        .cell.output {
+            background: #27ae60;
+            border-color: #229954;
+        }
+
+        .interactive-demo {
+            background: #f8f9fa;
+            padding: 30px;
+            border-radius: 10px;
+            margin: 30px 0;
+        }
+
+        .controls {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .control-group {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            border: 2px solid #e0e0e0;
+        }
+
+        .control-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: #2c3e50;
+        }
+
+        .control-group input[type="number"] {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            font-size: 1.1em;
+            text-align: center;
+            font-weight: 600;
+        }
+
+        .control-group input[type="number"]:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .result-box {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            text-align: center;
+            border: 3px solid #27ae60;
+        }
+
+        .result-box.invalid {
+            border-color: #e74c3c;
+            background: #ffe6e6;
+        }
+
+        .result-box h3 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+        }
+
+        .result-value {
+            font-size: 2em;
+            font-weight: bold;
+            color: #27ae60;
+            margin: 10px 0;
+        }
+
+        .result-box.invalid .result-value {
+            color: #e74c3c;
+        }
+
+        .explanation {
+            background: #e3f2fd;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border-left: 4px solid #2196f3;
+        }
+
+        .explanation h4 {
+            color: #1976d2;
+            margin-bottom: 10px;
+            font-size: 1.1em;
+        }
+
+        .explanation p {
+            color: #555;
+            line-height: 1.6;
+        }
+
+        .key-insight {
+            background: #fff3cd;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border-left: 4px solid #ffc107;
+        }
+
+        .key-insight h4 {
+            color: #856404;
+            margin-bottom: 10px;
+            font-size: 1.1em;
+        }
+
+        .example-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .example-table th,
+        .example-table td {
+            padding: 15px;
+            text-align: center;
+            border: 1px solid #ddd;
+        }
+
+        .example-table th {
+            background: #667eea;
+            color: white;
+            font-weight: 600;
+        }
+
+        .example-table tr:nth-child(even) {
+            background: #f8f9fa;
+        }
+
+        .example-table tr:hover {
+            background: #e3f2fd;
+        }
+
+        @media (max-width: 768px) {
+            .content {
+                padding: 20px;
+            }
+
+            .controls {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📐 Deriving the Convolution Output Formula</h1>
+            <p>Understanding where Output = ((Input - Filter + 2×Padding) / Stride) + 1 comes from</p>
+        </div>
+
+        <div class="content">
+            <!-- Introduction -->
+            <div class="explanation">
+                <h4>🎯 What We're Deriving</h4>
+                <p>
+                    When applying a convolution operation, we need to know the output dimensions.
+                    This formula tells us exactly how many positions the filter can occupy as it slides
+                    across the input. Let's derive it step by step!
+                </p>
+            </div>
+
+            <!-- Step 1 -->
+            <div class="step">
+                <div class="step-number">1</div>
+                <div class="step-content">
+                    <h3>Start with the Input Size</h3>
+                    <p>
+                        Imagine a 1D input of size <strong>N</strong> (we'll extend to 2D later).
+                        The input has pixels/elements from position 0 to N-1.
+                    </p>
+                    <div class="visual-example">
+                        <p><strong>Example: Input size N = 7</strong></p>
+                        <div class="grid-container">
+                            <div class="grid" style="grid-template-columns: repeat(7, 30px);">
+                                <div class="cell">0</div>
+                                <div class="cell">1</div>
+                                <div class="cell">2</div>
+                                <div class="cell">3</div>
+                                <div class="cell">4</div>
+                                <div class="cell">5</div>
+                                <div class="cell">6</div>
+                            </div>
+                        </div>
+                        <p style="color: #3498db; font-weight: 600;">7 input positions (indices 0-6)</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 2 -->
+            <div class="step">
+                <div class="step-number">2</div>
+                <div class="step-content">
+                    <h3>Add Padding</h3>
+                    <p>
+                        Padding adds <strong>P</strong> zeros on each side. This extends the input length.
+                        New size = N + P (left) + P (right) = <strong>N + 2P</strong>
+                    </p>
+                    <div class="visual-example">
+                        <p><strong>Example: Input N = 7, Padding P = 2</strong></p>
+                        <div class="grid-container">
+                            <div class="grid" style="grid-template-columns: repeat(11, 30px);">
+                                <div class="cell padding">P</div>
+                                <div class="cell padding">P</div>
+                                <div class="cell">0</div>
+                                <div class="cell">1</div>
+                                <div class="cell">2</div>
+                                <div class="cell">3</div>
+                                <div class="cell">4</div>
+                                <div class="cell">5</div>
+                                <div class="cell">6</div>
+                                <div class="cell padding">P</div>
+                                <div class="cell padding">P</div>
+                            </div>
+                        </div>
+                        <p style="color: #9b59b6; font-weight: 600;">Padded size: 7 + 2(2) = 11</p>
+                    </div>
+                    <div class="formula">
+                        Padded Size = N + 2P
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 3 -->
+            <div class="step">
+                <div class="step-number">3</div>
+                <div class="step-content">
+                    <h3>Consider Filter Size</h3>
+                    <p>
+                        The filter has size <strong>F</strong>. To compute one output, the filter must
+                        completely fit on the input. The filter covers F consecutive positions.
+                    </p>
+                    <div class="visual-example">
+                        <p><strong>Example: Filter size F = 3</strong></p>
+                        <div class="grid-container">
+                            <div class="grid" style="grid-template-columns: repeat(11, 30px);">
+                                <div class="cell padding filter">P</div>
+                                <div class="cell padding filter">P</div>
+                                <div class="cell filter">0</div>
+                                <div class="cell">1</div>
+                                <div class="cell">2</div>
+                                <div class="cell">3</div>
+                                <div class="cell">4</div>
+                                <div class="cell">5</div>
+                                <div class="cell">6</div>
+                                <div class="cell padding">P</div>
+                                <div class="cell padding">P</div>
+                            </div>
+                        </div>
+                        <p style="color: #e74c3c; font-weight: 600;">Filter spans 3 positions</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 4 -->
+            <div class="step">
+                <div class="step-number">4</div>
+                <div class="step-content">
+                    <h3>Calculate Valid Positions (Stride = 1)</h3>
+                    <p>
+                        With stride = 1, the filter moves one position at a time. Starting from position 0,
+                        the filter can slide until its end reaches the last position of the padded input.
+                    </p>
+                    <p>
+                        <strong>First position:</strong> Filter starts at index 0<br>
+                        <strong>Last position:</strong> Filter starts at index (N + 2P - F)<br>
+                        <strong>Number of positions:</strong> Last - First + 1 = (N + 2P - F) + 1
+                    </p>
+                    <div class="formula">
+                        Valid Positions = (N + 2P - F) + 1 = N - F + 2P + 1
+                    </div>
+                    <div class="key-insight">
+                        <h4>💡 Key Insight</h4>
+                        <p>
+                            The filter needs <strong>F</strong> positions to operate. So from a padded input
+                            of size (N + 2P), we lose (F - 1) positions, leaving us with (N + 2P - F + 1) positions.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 5 -->
+            <div class="step">
+                <div class="step-number">5</div>
+                <div class="step-content">
+                    <h3>Introduce Stride</h3>
+                    <p>
+                        Stride <strong>S</strong> means the filter jumps S positions each time instead of 1.
+                        This reduces the number of output positions by a factor of S.
+                    </p>
+                    <p>
+                        If we have (N + 2P - F + 1) possible positions with stride 1, then with stride S,
+                        we divide by S:
+                    </p>
+                    <div class="formula highlight">
+                        Output = (N + 2P - F + 1) / S
+                    </div>
+                    <p style="margin-top: 15px;">
+                        This can be rewritten as:
+                    </p>
+                    <div class="formula highlight">
+                        Output = ((N + 2P - F) / S) + 1
+                    </div>
+                    <p style="margin-top: 15px;">
+                        Or equivalently:
+                    </p>
+                    <div class="formula highlight">
+                        Output = ((N - F + 2P) / S) + 1
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 6 -->
+            <div class="step">
+                <div class="step-number">6</div>
+                <div class="step-content">
+                    <h3>Final Formula</h3>
+                    <p>
+                        We've derived the complete formula! For an input of size <strong>N</strong>,
+                        filter size <strong>F</strong>, padding <strong>P</strong>, and stride <strong>S</strong>:
+                    </p>
+                    <div class="formula highlight" style="font-size: 1.3em; padding: 30px;">
+                        Output = ⌊(N - F + 2P) / S⌋ + 1
+                    </div>
+                    <p style="margin-top: 15px;">
+                        The floor function ⌊⌋ ensures we get an integer. For valid configurations,
+                        (N - F + 2P) should be divisible by S.
+                    </p>
+                    <div class="explanation">
+                        <h4>🎯 Extending to 2D</h4>
+                        <p>
+                            For 2D convolutions, apply the formula separately to height and width:
+                        </p>
+                        <div class="formula">
+                            Output Height = ⌊(H - F_h + 2P) / S⌋ + 1<br><br>
+                            Output Width = ⌊(W - F_w + 2P) / S⌋ + 1
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Interactive Demo -->
+            <div class="interactive-demo">
+                <h2 style="text-align: center; color: #2c3e50; margin-bottom: 30px;">
+                    🧮 Interactive Calculator
+                </h2>
+
+                <div class="controls">
+                    <div class="control-group">
+                        <label>Input Size (N):</label>
+                        <input type="number" id="inputSize" value="7" min="1" max="20" oninput="calculate()">
+                    </div>
+                    <div class="control-group">
+                        <label>Filter Size (F):</label>
+                        <input type="number" id="filterSize" value="3" min="1" max="10" oninput="calculate()">
+                    </div>
+                    <div class="control-group">
+                        <label>Padding (P):</label>
+                        <input type="number" id="padding" value="0" min="0" max="5" oninput="calculate()">
+                    </div>
+                    <div class="control-group">
+                        <label>Stride (S):</label>
+                        <input type="number" id="stride" value="1" min="1" max="5" oninput="calculate()">
+                    </div>
+                </div>
+
+                <div class="result-box" id="resultBox">
+                    <h3>Step-by-Step Calculation</h3>
+                    <div id="calculation" style="text-align: left; margin: 20px 0;"></div>
+                    <h3>Output Dimension</h3>
+                    <div class="result-value" id="result"></div>
+                    <div id="validation" style="margin-top: 10px;"></div>
+                </div>
+            </div>
+
+            <!-- Examples Table -->
+            <h2 style="text-align: center; color: #2c3e50; margin: 40px 0 20px;">
+                📚 Common Examples
+            </h2>
+
+            <table class="example-table">
+                <thead>
+                    <tr>
+                        <th>Scenario</th>
+                        <th>Input (N)</th>
+                        <th>Filter (F)</th>
+                        <th>Padding (P)</th>
+                        <th>Stride (S)</th>
+                        <th>Output</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Valid Padding</strong></td>
+                        <td>7</td>
+                        <td>3</td>
+                        <td>0</td>
+                        <td>1</td>
+                        <td><strong>5</strong></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Same Padding</strong></td>
+                        <td>7</td>
+                        <td>3</td>
+                        <td>1</td>
+                        <td>1</td>
+                        <td><strong>7</strong></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Stride 2</strong></td>
+                        <td>7</td>
+                        <td>3</td>
+                        <td>1</td>
+                        <td>2</td>
+                        <td><strong>4</strong></td>
+                    </tr>
+                    <tr>
+                        <td><strong>ImageNet-like</strong></td>
+                        <td>224</td>
+                        <td>7</td>
+                        <td>3</td>
+                        <td>2</td>
+                        <td><strong>112</strong></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Max Pool 2×2</strong></td>
+                        <td>56</td>
+                        <td>2</td>
+                        <td>0</td>
+                        <td>2</td>
+                        <td><strong>28</strong></td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <!-- Key Takeaways -->
+            <div class="key-insight" style="margin-top: 40px;">
+                <h4>🎓 Key Takeaways</h4>
+                <p><strong>1.</strong> Padding increases the effective input size by 2P</p>
+                <p><strong>2.</strong> The filter needs F positions, reducing available space by (F-1)</p>
+                <p><strong>3.</strong> Stride divides the number of positions by S</p>
+                <p><strong>4.</strong> The "+1" accounts for the starting position</p>
+                <p><strong>5.</strong> For valid configurations, (N - F + 2P) must be divisible by S</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function calculate() {
+            const N = parseInt(document.getElementById('inputSize').value);
+            const F = parseInt(document.getElementById('filterSize').value);
+            const P = parseInt(document.getElementById('padding').value);
+            const S = parseInt(document.getElementById('stride').value);
+
+            // Calculate step by step
+            const paddedSize = N + 2 * P;
+            const numerator = N - F + 2 * P;
+            const division = numerator / S;
+            const output = Math.floor(division) + 1;
+
+            // Display calculation
+            const calcDiv = document.getElementById('calculation');
+            calcDiv.innerHTML = `
+                <p style="line-height: 2; font-family: 'Courier New', monospace;">
+                    <strong>Step 1:</strong> Padded Size = N + 2P = ${N} + 2(${P}) = <span style="color: #667eea; font-weight: bold;">${paddedSize}</span><br>
+                    <strong>Step 2:</strong> Numerator = N - F + 2P = ${N} - ${F} + ${2*P} = <span style="color: #667eea; font-weight: bold;">${numerator}</span><br>
+                    <strong>Step 3:</strong> Divide by Stride = ${numerator} / ${S} = <span style="color: #667eea; font-weight: bold;">${division.toFixed(2)}</span><br>
+                    <strong>Step 4:</strong> Add 1 = ⌊${division.toFixed(2)}⌋ + 1 = <span style="color: #27ae60; font-weight: bold; font-size: 1.2em;">${output}</span>
+                </p>
+            `;
+
+            // Display result
+            document.getElementById('result').textContent = output;
+
+            // Validation
+            const resultBox = document.getElementById('resultBox');
+            const validationDiv = document.getElementById('validation');
+
+            const isInteger = Number.isInteger(division);
+            if (isInteger) {
+                resultBox.className = 'result-box';
+                validationDiv.innerHTML = '<p style="color: #27ae60; font-weight: 600;">✓ Valid Configuration - Result is an integer!</p>';
+            } else {
+                resultBox.className = 'result-box invalid';
+                validationDiv.innerHTML = '<p style="color: #e74c3c; font-weight: 600;">⚠ Warning: (N - F + 2P) is not divisible by S. Using floor function.</p>';
+            }
+        }
+
+        // Calculate on page load
+        window.onload = calculate;
+    </script>
+</body>
+</html>

@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Progressive Derivation - Build the Formula Step by Step</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.2em;
+            margin-bottom: 10px;
+        }
+
+        .content {
+            padding: 30px;
+        }
+
+        .setup {
+            background: #e3f2fd;
+            padding: 25px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            border-left: 5px solid #2196f3;
+        }
+
+        .setup h2 {
+            color: #1565c0;
+            margin-bottom: 15px;
+        }
+
+        .input-controls {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .input-group {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+        }
+
+        .input-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #2c3e50;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            font-size: 1.1em;
+            text-align: center;
+            font-weight: 600;
+        }
+
+        .progression {
+            display: grid;
+            gap: 25px;
+        }
+
+        .case {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 10px;
+            border-left: 5px solid #667eea;
+            transition: all 0.3s;
+        }
+
+        .case:hover {
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+            transform: translateX(5px);
+        }
+
+        .case-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .case-number {
+            background: #667eea;
+            color: white;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5em;
+            font-weight: bold;
+        }
+
+        .case-title {
+            flex: 1;
+            margin-left: 20px;
+        }
+
+        .case-title h3 {
+            color: #2c3e50;
+            font-size: 1.3em;
+        }
+
+        .case-params {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .param {
+            text-align: center;
+        }
+
+        .param-label {
+            font-size: 0.9em;
+            color: #7f8c8d;
+            margin-bottom: 5px;
+        }
+
+        .param-value {
+            font-size: 1.8em;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+
+        .calculation {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 15px 0;
+            font-family: 'Courier New', monospace;
+        }
+
+        .calc-step {
+            padding: 10px 0;
+            border-bottom: 1px dashed #ddd;
+            font-size: 1.05em;
+        }
+
+        .calc-step:last-child {
+            border-bottom: none;
+            font-weight: bold;
+            color: #27ae60;
+            font-size: 1.2em;
+            margin-top: 10px;
+        }
+
+        .result-box {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            margin-top: 15px;
+        }
+
+        .result-box h4 {
+            margin-bottom: 10px;
+            font-size: 1.1em;
+        }
+
+        .result-value {
+            font-size: 2em;
+            font-weight: bold;
+        }
+
+        .observation {
+            background: #fff3cd;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border-left: 4px solid #ffc107;
+        }
+
+        .observation h4 {
+            color: #856404;
+            margin-bottom: 10px;
+            font-size: 1.1em;
+        }
+
+        .observation ul {
+            margin-left: 20px;
+            line-height: 1.8;
+        }
+
+        .pattern {
+            background: #d4edda;
+            padding: 25px;
+            border-radius: 10px;
+            margin: 30px 0;
+            border-left: 5px solid #28a745;
+        }
+
+        .pattern h3 {
+            color: #155724;
+            margin-bottom: 15px;
+            font-size: 1.4em;
+        }
+
+        .formula-evolution {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 15px 0;
+        }
+
+        .formula-step {
+            padding: 15px;
+            margin: 10px 0;
+            background: #f8f9fa;
+            border-left: 4px solid #667eea;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+            font-size: 1.1em;
+            font-weight: 600;
+        }
+
+        .formula-step.final {
+            background: #fff3cd;
+            border-color: #ffc107;
+            font-size: 1.3em;
+            text-align: center;
+        }
+
+        .grid-visual {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+
+        .grid-container {
+            text-align: center;
+        }
+
+        .grid {
+            display: inline-grid;
+            gap: 1px;
+            background: #2c3e50;
+            padding: 2px;
+            border-radius: 5px;
+            margin: 10px;
+        }
+
+        .cell {
+            width: 25px;
+            height: 25px;
+            background: #3498db;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7em;
+            color: white;
+            font-weight: bold;
+        }
+
+        .cell.padding {
+            background: #9b59b6;
+        }
+
+        .cell.output {
+            background: #27ae60;
+        }
+
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .comparison-table th,
+        .comparison-table td {
+            padding: 15px;
+            text-align: center;
+            border: 1px solid #ddd;
+        }
+
+        .comparison-table th {
+            background: #667eea;
+            color: white;
+            font-weight: 600;
+        }
+
+        .comparison-table tr:hover {
+            background: #f8f9fa;
+        }
+
+        @media (max-width: 768px) {
+            .content {
+                padding: 15px;
+            }
+
+            .grid-visual {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📊 Progressive Formula Derivation</h1>
+            <p>Build the formula step-by-step: Start simple, add complexity, generalize</p>
+        </div>
+
+        <div class="content">
+            <!-- Initial Setup -->
+            <div class="setup">
+                <h2>🎯 Initial Setup: 2D Convolution</h2>
+                <p style="margin: 10px 0; line-height: 1.6;">
+                    We'll start with a simple case and progressively add complexity.
+                    Watch how each change affects the output dimensions!
+                </p>
+                <div class="input-controls">
+                    <div class="input-group">
+                        <label>Input Height (H):</label>
+                        <input type="number" id="inputH" value="7" min="3" max="20" oninput="updateAll()">
+                    </div>
+                    <div class="input-group">
+                        <label>Input Width (W):</label>
+                        <input type="number" id="inputW" value="7" min="3" max="20" oninput="updateAll()">
+                    </div>
+                    <div class="input-group">
+                        <label>Filter Size (F×F):</label>
+                        <input type="number" id="filterF" value="3" min="1" max="7" oninput="updateAll()">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Progression Container -->
+            <div class="progression" id="progression"></div>
+
+            <!-- Observations -->
+            <div class="observation" id="observations"></div>
+
+            <!-- Pattern Recognition -->
+            <div class="pattern">
+                <h3>🎓 Pattern Recognition & Generalization</h3>
+                <div id="patterns"></div>
+            </div>
+
+            <!-- Comparison Table -->
+            <h2 style="text-align: center; color: #2c3e50; margin: 30px 0;">
+                📋 Side-by-Side Comparison
+            </h2>
+            <table class="comparison-table" id="comparisonTable"></table>
+
+            <!-- Final Formula -->
+            <div class="pattern" style="background: #fff3cd; border-color: #ffc107;">
+                <h3 style="color: #856404;">🎯 Final Generalized Formula</h3>
+                <div class="formula-step final">
+                    Output_H = ⌊(H - F + 2P) / S⌋ + 1<br><br>
+                    Output_W = ⌊(W - F + 2P) / S⌋ + 1
+                </div>
+                <p style="margin-top: 20px; line-height: 1.8;">
+                    <strong>Where:</strong><br>
+                    • H, W = Input dimensions (height, width)<br>
+                    • F = Filter size (assuming square filter F×F)<br>
+                    • P = Padding (added to all sides)<br>
+                    • S = Stride (step size)<br>
+                    • ⌊⌋ = Floor function (round down to integer)
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function calculateOutput(input, filter, padding, stride) {
+            return Math.floor((input - filter + 2 * padding) / stride) + 1;
+        }
+
+        function updateAll() {
+            const H = parseInt(document.getElementById('inputH').value);
+            const W = parseInt(document.getElementById('inputW').value);
+            const F = parseInt(document.getElementById('filterF').value);
+
+            // Generate progression cases
+            const cases = [
+                { title: "Base Case", desc: "No padding, stride 1", P: 0, S: 1, color: "#3498db" },
+                { title: "Add Padding +1", desc: "Padding = 1, stride still 1", P: 1, S: 1, color: "#9b59b6" },
+                { title: "Add Padding +1 More", desc: "Padding = 2, stride still 1", P: 2, S: 1, color: "#9b59b6" },
+                { title: "Now Increase Stride +1", desc: "Back to P=0, stride = 2", P: 0, S: 2, color: "#e74c3c" },
+                { title: "Combine: P=1, S=2", desc: "Padding = 1, stride = 2", P: 1, S: 2, color: "#f39c12" },
+                { title: "Combine: P=2, S=2", desc: "Padding = 2, stride = 2", P: 2, S: 2, color: "#f39c12" }
+            ];
+
+            // Generate HTML for each case
+            let progressionHTML = '';
+            cases.forEach((c, index) => {
+                const outH = calculateOutput(H, F, c.P, c.S);
+                const outW = calculateOutput(W, F, c.P, c.S);
+
+                progressionHTML += `
+                    <div class="case" style="border-left-color: ${c.color};">
+                        <div class="case-header">
+                            <div class="case-number" style="background: ${c.color};">${index + 1}</div>
+                            <div class="case-title">
+                                <h3>${c.title}</h3>
+                                <p style="color: #7f8c8d; margin-top: 5px;">${c.desc}</p>
+                            </div>
+                        </div>
+
+                        <div class="case-params">
+                            <div class="param">
+                                <div class="param-label">Input</div>
+                                <div class="param-value">${H}×${W}</div>
+                            </div>
+                            <div class="param">
+                                <div class="param-label">Filter</div>
+                                <div class="param-value">${F}×${F}</div>
+                            </div>
+                            <div class="param">
+                                <div class="param-label">Padding</div>
+                                <div class="param-value" style="color: #9b59b6;">${c.P}</div>
+                            </div>
+                            <div class="param">
+                                <div class="param-label">Stride</div>
+                                <div class="param-value" style="color: #e74c3c;">${c.S}</div>
+                            </div>
+                        </div>
+
+                        <div class="calculation">
+                            <div class="calc-step">
+                                <strong>Height:</strong> ⌊(${H} - ${F} + 2×${c.P}) / ${c.S}⌋ + 1
+                            </div>
+                            <div class="calc-step">
+                                = ⌊(${H - F + 2*c.P}) / ${c.S}⌋ + 1
+                            </div>
+                            <div class="calc-step">
+                                = ⌊${((H - F + 2*c.P) / c.S).toFixed(2)}⌋ + 1 = <span style="color: #27ae60;">${outH}</span>
+                            </div>
+                        </div>
+
+                        <div class="calculation">
+                            <div class="calc-step">
+                                <strong>Width:</strong> ⌊(${W} - ${F} + 2×${c.P}) / ${c.S}⌋ + 1
+                            </div>
+                            <div class="calc-step">
+                                = ⌊(${W - F + 2*c.P}) / ${c.S}⌋ + 1
+                            </div>
+                            <div class="calc-step">
+                                = ⌊${((W - F + 2*c.P) / c.S).toFixed(2)}⌋ + 1 = <span style="color: #27ae60;">${outW}</span>
+                            </div>
+                        </div>
+
+                        <div class="result-box" style="background: ${c.color};">
+                            <h4>Output Dimensions</h4>
+                            <div class="result-value">${outH} × ${outW}</div>
+                        </div>
+                    </div>
+                `;
+            });
+
+            document.getElementById('progression').innerHTML = progressionHTML;
+
+            // Generate observations
+            const obs = generateObservations(H, W, F);
+            document.getElementById('observations').innerHTML = `
+                <h4>🔍 Key Observations</h4>
+                ${obs}
+            `;
+
+            // Generate patterns
+            const patterns = generatePatterns(H, W, F);
+            document.getElementById('patterns').innerHTML = patterns;
+
+            // Generate comparison table
+            const tableHTML = generateComparisonTable(H, W, F, cases);
+            document.getElementById('comparisonTable').innerHTML = tableHTML;
+        }
+
+        function generateObservations(H, W, F) {
+            const base = calculateOutput(H, F, 0, 1);
+            const p1 = calculateOutput(H, F, 1, 1);
+            const p2 = calculateOutput(H, F, 2, 1);
+            const s2 = calculateOutput(H, F, 0, 2);
+
+            return `
+                <ul>
+                    <li><strong>Base case (P=0, S=1):</strong> Output is ${base}×${calculateOutput(W, F, 0, 1)} (smaller than input)</li>
+                    <li><strong>Adding padding:</strong> Each unit of padding adds ~2 to the output size
+                        <ul>
+                            <li>P=1: ${p1} (gained ${p1 - base} compared to base)</li>
+                            <li>P=2: ${p2} (gained ${p2 - base} compared to base)</li>
+                        </ul>
+                    </li>
+                    <li><strong>Increasing stride:</strong> Stride=2 roughly halves the output (${base} → ${s2})</li>
+                    <li><strong>Combined effect:</strong> Padding increases size, stride decreases it</li>
+                    <li><strong>Pattern:</strong> Output = (Input - Filter + 2×Padding) / Stride + 1</li>
+                </ul>
+            `;
+        }
+
+        function generatePatterns(H, W, F) {
+            return `
+                <div class="formula-evolution">
+                    <h4 style="color: #2c3e50; margin-bottom: 15px;">Building the Formula:</h4>
+
+                    <div class="formula-step">
+                        <strong>Step 1:</strong> Base size (no padding, stride 1)<br>
+                        Output = Input - Filter + 1
+                    </div>
+
+                    <div class="formula-step">
+                        <strong>Step 2:</strong> Add padding effect (P on each side = 2P total)<br>
+                        Output = Input - Filter + 2P + 1
+                    </div>
+
+                    <div class="formula-step">
+                        <strong>Step 3:</strong> Add stride effect (divides the range)<br>
+                        Output = (Input - Filter + 2P) / Stride + 1
+                    </div>
+
+                    <div class="formula-step">
+                        <strong>Step 4:</strong> Add floor function (ensure integer)<br>
+                        Output = ⌊(Input - Filter + 2P) / Stride⌋ + 1
+                    </div>
+
+                    <div class="formula-step final">
+                        <strong>Final Formula:</strong><br>
+                        Output = ⌊(Input - Filter + 2×Padding) / Stride⌋ + 1
+                    </div>
+                </div>
+
+                <h4 style="margin: 20px 0 10px; color: #2c3e50;">💡 Why This Formula?</h4>
+                <ul style="line-height: 1.8; margin-left: 20px;">
+                    <li><strong>(Input - Filter):</strong> Available sliding range</li>
+                    <li><strong>+ 2P:</strong> Padding extends the sliding range on both sides</li>
+                    <li><strong>/ Stride:</strong> Jumping reduces number of positions</li>
+                    <li><strong>+ 1:</strong> Count includes the starting position</li>
+                    <li><strong>⌊⌋:</strong> Floor function ensures valid integer positions</li>
+                </ul>
+            `;
+        }
+
+        function generateComparisonTable(H, W, F, cases) {
+            let html = `
+                <thead>
+                    <tr>
+                        <th>Case</th>
+                        <th>Padding</th>
+                        <th>Stride</th>
+                        <th>Output H</th>
+                        <th>Output W</th>
+                        <th>Change from Base</th>
+                    </tr>
+                </thead>
+                <tbody>
+            `;
+
+            const baseH = calculateOutput(H, F, 0, 1);
+            const baseW = calculateOutput(W, F, 0, 1);
+
+            cases.forEach((c, index) => {
+                const outH = calculateOutput(H, F, c.P, c.S);
+                const outW = calculateOutput(W, F, c.P, c.S);
+                const changeH = outH - baseH;
+                const changeW = outW - baseW;
+                const changeSymbol = changeH > 0 ? '▲' : (changeH < 0 ? '▼' : '=');
+                const changeColor = changeH > 0 ? '#27ae60' : (changeH < 0 ? '#e74c3c' : '#7f8c8d');
+
+                html += `
+                    <tr>
+                        <td><strong>Case ${index + 1}</strong><br><small>${c.title}</small></td>
+                        <td><strong>${c.P}</strong></td>
+                        <td><strong>${c.S}</strong></td>
+                        <td><strong>${outH}</strong></td>
+                        <td><strong>${outW}</strong></td>
+                        <td style="color: ${changeColor}; font-weight: 600;">
+                            ${changeSymbol} ${Math.abs(changeH)} × ${Math.abs(changeW)}
+                        </td>
+                    </tr>
+                `;
+            });
+
+            html += '</tbody>';
+            return html;
+        }
+
+        // Initialize on load
+        window.onload = updateAll;
+    </script>
+</body>
+</html>
