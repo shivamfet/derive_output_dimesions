@@ -390,29 +390,111 @@
             <div class="step">
                 <div class="step-number">3</div>
                 <div class="step-content">
-                    <h3>Consider Filter Size</h3>
+                    <h3>Consider Filter Size (No Padding Yet)</h3>
                     <p>
+                        Let's first work with <strong>no padding (P=0)</strong> and <strong>stride 1</strong>.
                         The filter has size <strong>F</strong>. To compute one output, the filter must
                         completely fit on the input. The filter covers F consecutive positions.
                     </p>
                     <div class="visual-example">
-                        <p><strong>Example: Filter size F = 3</strong></p>
+                        <p><strong>Example: Input N = 7, Filter F = 3, No Padding</strong></p>
                         <div class="grid-container">
-                            <div class="grid" style="grid-template-columns: repeat(11, 30px);">
-                                <div class="cell padding filter">P</div>
-                                <div class="cell padding filter">P</div>
+                            <div class="grid" style="grid-template-columns: repeat(7, 30px);">
                                 <div class="cell filter">0</div>
-                                <div class="cell">1</div>
-                                <div class="cell">2</div>
+                                <div class="cell filter">1</div>
+                                <div class="cell filter">2</div>
                                 <div class="cell">3</div>
                                 <div class="cell">4</div>
                                 <div class="cell">5</div>
                                 <div class="cell">6</div>
-                                <div class="cell padding">P</div>
-                                <div class="cell padding">P</div>
                             </div>
                         </div>
-                        <p style="color: #e74c3c; font-weight: 600;">Filter spans 3 positions</p>
+                        <p style="color: #e74c3c; font-weight: 600; margin: 10px 0;">
+                            Position 1: Filter at indices [0, 1, 2]
+                        </p>
+
+                        <div class="grid-container">
+                            <div class="grid" style="grid-template-columns: repeat(7, 30px);">
+                                <div class="cell">0</div>
+                                <div class="cell filter">1</div>
+                                <div class="cell filter">2</div>
+                                <div class="cell filter">3</div>
+                                <div class="cell">4</div>
+                                <div class="cell">5</div>
+                                <div class="cell">6</div>
+                            </div>
+                        </div>
+                        <p style="color: #e74c3c; font-weight: 600; margin: 10px 0;">
+                            Position 2: Filter at indices [1, 2, 3]
+                        </p>
+
+                        <div class="grid-container">
+                            <div class="grid" style="grid-template-columns: repeat(7, 30px);">
+                                <div class="cell">0</div>
+                                <div class="cell">1</div>
+                                <div class="cell">2</div>
+                                <div class="cell">3</div>
+                                <div class="cell filter">4</div>
+                                <div class="cell filter">5</div>
+                                <div class="cell filter">6</div>
+                            </div>
+                        </div>
+                        <p style="color: #e74c3c; font-weight: 600; margin: 10px 0;">
+                            Position 5 (LAST): Filter at indices [4, 5, 6]
+                        </p>
+
+                        <p style="color: #27ae60; font-weight: 600; font-size: 1.1em; margin-top: 20px;">
+                            ✓ Filter can be placed at 5 different positions
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 3b - WHY +1 -->
+            <div class="step" style="border-left-color: #f39c12; background: #fff8e1;">
+                <div class="step-number" style="background: #f39c12;">💡</div>
+                <div class="step-content">
+                    <h3>Why Do We Add +1? (The Counting Principle)</h3>
+                    <p>
+                        This is the key insight! Let's count carefully:
+                    </p>
+                    <div class="formula" style="background: #fff3cd;">
+                        First valid position: 0<br>
+                        Last valid position: N - F = 7 - 3 = 4<br><br>
+                        How many positions from 0 to 4?<br>
+                        Count: 0, 1, 2, 3, 4 = <strong>5 positions</strong>
+                    </div>
+                    <p style="margin-top: 15px;">
+                        <strong>General rule:</strong> From index <code>a</code> to index <code>b</code>,
+                        there are <strong>(b - a + 1)</strong> positions.
+                    </p>
+                    <div class="key-insight">
+                        <h4>🎯 The +1 Explained</h4>
+                        <p>
+                            <strong>Last position:</strong> Filter starts at (N - F)<br>
+                            <strong>First position:</strong> Filter starts at 0<br>
+                            <strong>Total positions:</strong> (N - F) - 0 + 1 = <strong>N - F + 1</strong>
+                        </p>
+                        <p style="margin-top: 10px;">
+                            This "+1" accounts for the <strong>starting position (0)</strong> in the count!
+                        </p>
+                    </div>
+                    <div class="visual-example">
+                        <p><strong>Visual Proof:</strong></p>
+                        <div style="background: white; padding: 20px; border-radius: 8px; font-family: 'Courier New', monospace; font-size: 1.1em;">
+                            <strong>Example: N=7, F=3</strong><br><br>
+                            Valid starting positions:<br>
+                            • Position 0: [0, 1, 2] ✓<br>
+                            • Position 1: [1, 2, 3] ✓<br>
+                            • Position 2: [2, 3, 4] ✓<br>
+                            • Position 3: [3, 4, 5] ✓<br>
+                            • Position 4: [4, 5, 6] ✓<br>
+                            • Position 5: [5, 6, 7] ✗ (7 doesn't exist!)<br><br>
+                            <strong style="color: #27ae60;">Total: 5 positions = (7 - 3) + 1</strong>
+                        </div>
+                    </div>
+                    <div class="formula highlight">
+                        Output (no padding, stride 1) = N - F + 1
                     </div>
                 </div>
             </div>
